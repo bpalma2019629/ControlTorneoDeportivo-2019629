@@ -18,6 +18,7 @@
     "mongoose": "^6.2.4",
     "nodemon": "^2.0.15",
     "pdfkit": "^0.13.0",
-    "pdfkit-construct": "^1.2.3"
+    "pdfkit-construct": "^1.2.3",
+    "table": "^6.8.0"
   }
 }

@@ -161,7 +161,7 @@ function EliminarUsuario(req, res) {
 }
 //ver
 function verUsuarios(req, res) {
-    if (req.user.rol == 'Admin') {
+    if (req.user.rol == 'Rol_Admin') {
         Usuarios.find((err, usuariosEncontrados) => {
             if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
             if (!usuariosEncontrados) return res.status(404).send({ mensaje: 'Error al cargar los usuarios' });
