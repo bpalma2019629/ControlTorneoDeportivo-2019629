@@ -3,6 +3,7 @@ const cors = require('cors');
 var app = express();
 
 const UsuarioRutas = require('./src/routes/usuarios.routes');
+const LigasRoutes = require('./src/routes/ligas.routes');
 
 
 
@@ -11,6 +12,6 @@ app.use(express.json());
 
 app.use(cors());
 
-app.use('/api', UsuarioRutas);
+app.use('/api', UsuarioRutas, LigasRoutes);
 
 module.exports = app;
