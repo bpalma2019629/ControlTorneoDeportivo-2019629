@@ -37,7 +37,7 @@ function agregarLigaAdmin(req, res){
         if(parametros.liga){
             Ligas.find({liga:parametros.liga, idUser:idUser}, (err, ligaEncontrada)=>{
                 if(ligaEncontrada.length = 0){
-                    ligasModedl.liga = parametros.liga;
+                    ligasModel.liga = parametros.liga;
                     ligasModel.idUser = idUser;
                     ligasModel.save((err, ligaGuardada)=>{
                         if (err) return res.status(500).send({ mensaje: "Error en la peticion" });
@@ -62,22 +62,25 @@ function editarLiga(req, res) {
     if (req.user.rol == 'Rol_Admin' || req.user.rol == 'Rol_User') {
         if (parametros.liga) {
             if (parametros.idUser) return res.status(404).send({ mensaje: 'No se puede editar el id' });
-            Ligas.find({ liga: parametros.liga, idUser: req.user.sub }, (err, ligaEncontrada) => {
-                if (ligaEncontrada.length == 0) {
-                    Ligas.findById(idLiga, (err, ligaEncontrada2) => {
-                        if (ligaEncontrada2.idUser == req.user.sub || req.user.rol == 'Rol_Admin'){
-                            Ligas.findByIdAndUpdate(idLiga, parametros, { new: true }, (err, ligaActualizada) => {
-                                if (err) return res.status(500).send({ mensaje: "Error en la peticion" });
-                                if (!ligaActualizada) return res.status(400).send({ mensaje: "Error al editar la liga" });
-                                return res.status(200).send({ liga: ligaActualizada });
-                            })
-                        }else{
-                            return res.status(500).send({ mensaje: 'No puede editar ligas de otros' });
-                        }
-                    })
-                } else {
-                    return res.status(404).send({ mensaje: 'No se puede crear la Liga' })
-                }
+            Ligas.findById(idLiga, (err, infoLiga)=>{
+                if(!infoLiga) return res.status(404).send({mensaje:'Error al encontrar la liga'});
+                Ligas.find({ liga: parametros.liga, idUser: infoLiga.idUser }, (err, ligaEncontrada) => {
+                    if (ligaEncontrada.length == 0) {
+                        Ligas.findById(idLiga, (err, ligaEncontrada2) => {
+                            if (ligaEncontrada2.idUser == req.user.sub || req.user.rol == 'Rol_Admin'){
+                                Ligas.findByIdAndUpdate(idLiga, parametros, { new: true }, (err, ligaActualizada) => {
+                                    if (err) return res.status(500).send({ mensaje: "Error en la peticion" });
+                                    if (!ligaActualizada) return res.status(400).send({ mensaje: "Error al editar la liga" });
+                                    return res.status(200).send({ liga: ligaActualizada });
+                                })
+                            }else{
+                                return res.status(500).send({ mensaje: 'No puede editar ligas de otros' });
+                            }
+                        })
+                    } else {
+                        return res.status(404).send({ mensaje: 'No se puede editar la Liga' })
+                    }
+                })
             })
         } else {
             return res.status(404).send({ mensaje: 'ingrese el nombre de la liga' })

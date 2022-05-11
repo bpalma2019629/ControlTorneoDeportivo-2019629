@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var EquiposSchema = Schema({
+var PartidosSchema = Schema({
     jornada: Number,
     equipo1: String,
     equipo2: String,
@@ -10,4 +10,4 @@ var EquiposSchema = Schema({
     idLiga: {type: Schema.Types.ObjectId, ref:'ligas'}
 });
 
-module.exports = mongoose.model('equipos', EquiposSchema);
+module.exports = mongoose.model('partidos', PartidosSchema);

@@ -5,7 +5,7 @@ const md_autenticacion = require('../middlewares/autenticacion');
 var api= express.Router();
 
 api.post('/login', usuariosController.Login);
-api.post('/registrarCliente', usuariosController.Registo);
+api.post('/registrar', usuariosController.Registo);
 api.post('/agregarUsuario',md_autenticacion.Auth,usuariosController.agregarUsuario);
 api.put('/editarUsuario/:idUsuario',md_autenticacion.Auth,usuariosController.EditarUsuario);
 api.delete('/eliminarUsuario/:idUsuario',md_autenticacion.Auth,usuariosController.EliminarUsuario);

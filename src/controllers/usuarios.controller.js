@@ -1,6 +1,7 @@
 const Usuarios = require('../models/usuarios.model');
 const bcrypt = require('bcrypt-nodejs');
 const jwt = require('../services/jwt');
+const { table } = require('table');
 const md_autenticacion = require('../middlewares/autenticacion');
 
 //Login

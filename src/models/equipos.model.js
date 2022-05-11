@@ -8,7 +8,7 @@ var EquiposSchema = Schema({
     golesContra: Number,
     diferenciaGoles: Number,
     partidosJugados: Number,
-    idLiga: {type: Schema.Types.ObjectId, ref:'ligas'}
+    liga: {type: Schema.Types.ObjectId, ref:'ligas'}
 });
 
 module.exports = mongoose.model('equipos', EquiposSchema);
