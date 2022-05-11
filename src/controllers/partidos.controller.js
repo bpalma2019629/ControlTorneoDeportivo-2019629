@@ -27,52 +27,61 @@ function partido(req, res) {
                     if (parametros.jornada > jornadas || parametros.jornada <= 0) return res.status(404).send({ mensaje: 'La jornada excede las disponibles' });
                     Partidos.find({ jornada: parametros.jornada, idLiga: idLiga }, (err, partidosEncontrados) => {
                         if (partidosEncontrados.length < partidos) {
-                            Partidos.findOne({ equipo1: parametros.equipo1, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo1Participado) => {
-                                if (equipo1Participado) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
-                                Partidos.findOne({ equipo2: parametros.equipo1, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo1Participado2) => {
-                                    if (equipo1Participado2) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
-                                    Partidos.findOne({ equipo1: parametros.equipo2, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo2Participado) => {
-                                        if (equipo2Participado) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
-                                        Partidos.findOne({ equipo2: parametros.equipo2, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo2Participado2) => {
-                                            if (equipo2Participado2) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
-                                            partidoModel.equipo1 = parametros.equipo1;
-                                            partidoModel.equipo2 = parametros.equipo2;
-                                            partidoModel.golesEquipo1 = parametros.golesEquipo1;
-                                            partidoModel.golesEquipo2 = parametros.golesEquipo2;
-                                            partidoModel.jornada = parametros.jornada;
-                                            partidoModel.idLiga = idLiga;
-                                            partidoModel.save((err, partidoGuardado) => {
-                                                if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
-                                                if (!partidoGuardado) return res.status(404).send({ mensaje: 'No se pudo guardar el parido' });
-                                                if (parametros.golesEquipo1 > parametros.golesEquipo2) {
-                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo1, golesContra: parametros.golesEquipo2, puntos: ganador, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
-                                                        Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: Number(equipoActualizado.golesFavor) - Number(equipoActualizado.golesContra) }, { new: true }, (err, diferencia) => {
-                                                            Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo2, golesContra: parametros.golesEquipo1, puntos: perdedor, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
-                                                                Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { diferenciaGoles: Number(equipoActualizado.golesFavor) - Number(equipoActualizado.golesContra) }, { new: true }, (err, diferencia) => {
+                            Equipos.findOne({equipo:parametros.equipo1, liga:idLiga}, (err, equipoExistente)=>{
+                                if(!equipoExistente) return res.status(404).send({ mensaje: 'Este equipo no exite'});
+                                Equipos.findOne({equipo:parametros.equipo2, liga:idLiga},(err, equipoExistente2)=>{
+                                    if(!equipoExistente2) res.status(404).send({ mensaje: 'El equipo no existe' });
+                                    Partidos.findOne({equipo1:parametros.equipo1, equipo2:parametros.equipo2, idLiga:idLiga}, (err, partidoJugado)=>{
+                                        if(partidoJugado) return res.status(404).send({ mensaje: 'estos equipos ya no pueden jugar'});
+                                        Partidos.findOne({ equipo1: parametros.equipo1, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo1Participado) => {
+                                            if (equipo1Participado) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
+                                            Partidos.findOne({ equipo2: parametros.equipo1, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo1Participado2) => {
+                                                if (equipo1Participado2) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
+                                                Partidos.findOne({ equipo1: parametros.equipo2, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo2Participado) => {
+                                                    if (equipo2Participado) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
+                                                    Partidos.findOne({ equipo2: parametros.equipo2, jornada: parametros.jornada, idLiga: idLiga }, (err, equipo2Participado2) => {
+                                                        if (equipo2Participado2) res.status(404).send({ mensaje: 'El equipo ya jugo en la jornada' });
+                                                        partidoModel.equipo1 = parametros.equipo1;
+                                                        partidoModel.equipo2 = parametros.equipo2;
+                                                        partidoModel.golesEquipo1 = parametros.golesEquipo1;
+                                                        partidoModel.golesEquipo2 = parametros.golesEquipo2;
+                                                        partidoModel.jornada = parametros.jornada;
+                                                        partidoModel.idLiga = idLiga;
+                                                        partidoModel.save((err, partidoGuardado) => {
+                                                            if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+                                                            if (!partidoGuardado) return res.status(404).send({ mensaje: 'No se pudo guardar el parido' });
+                                                            if (parametros.golesEquipo1 > parametros.golesEquipo2) {
+                                                                Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo1, golesContra: parametros.golesEquipo2, puntos: ganador, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
+                                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - NumberequipoActualizado.golesContra}, { new: true }, (err, diferencia) => {
+                                                                        Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo2, golesContra: parametros.golesEquipo1, puntos: perdedor, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
+                                                                            Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - equipoActualizado.golesContra }, { new: true }, (err, diferencia) => {
+                                                                            })
+                                                                        })
+                                                                    })
                                                                 })
-                                                            })
+            
+                                                            } else if (parametros.golesEquipo1 < parametros.golesEquipo2) {
+                                                                Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo1, golesContra: parametros.golesEquipo2, puntos: perdedor, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
+                                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - equipoActualizado.golesContra }, { new: true }, (err, diferencia) => {
+                                                                        Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo2, golesContra: parametros.golesEquipo1, puntos: ganador, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
+                                                                            Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - equipoActualizado.golesContra }, { new: true }, (err, diferencia) => {
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                })
+                                                            } else if (parametros.golesEquipo1 == parametros.golesEquipo2) {
+                                                                Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo1, golesContra: parametros.golesEquipo2, puntos: empate, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
+                                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - equipoActualizado.golesContra }, { new: true }, (err, diferencia) => {
+                                                                        Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo2, golesContra: parametros.golesEquipo1, puntos: empate, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
+                                                                            Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - equipoActualizado.golesContra}, { new: true }, (err, diferencia) => {
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                })
+                                                            }
                                                         })
                                                     })
-
-                                                } else if (parametros.golesEquipo1 < parametros.golesEquipo2) {
-                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo1, golesContra: parametros.golesEquipo2, puntos: perdedor, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
-                                                        Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: Number(equipoActualizado.golesFavor) - Number(equipoActualizado.golesContra) }, { new: true }, (err, diferencia) => {
-                                                            Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo2, golesContra: parametros.golesEquipo1, puntos: ganador, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
-                                                                Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { diferenciaGoles: Number(equipoActualizado.golesFavor) - Number(equipoActualizado.golesContra) }, { new: true }, (err, diferencia) => {
-                                                                })
-                                                            })
-                                                        })
-                                                    })
-                                                } else if (parametros.golesEquipo1 == parametros.golesEquipo2) {
-                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo1, golesContra: parametros.golesEquipo2, puntos: empate, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
-                                                        Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: Number(equipoActualizado.golesFavor) - Number(equipoActualizado.golesContra) }, { new: true }, (err, diferencia) => {
-                                                            Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo2, golesContra: parametros.golesEquipo1, puntos: empate, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
-                                                                Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { diferenciaGoles: Number(equipoActualizado.golesFavor) - Number(equipoActualizado.golesContra) }, { new: true }, (err, diferencia) => {
-                                                                })
-                                                            })
-                                                        })
-                                                    })
-                                                }
+                                                })
                                             })
                                         })
                                     })

@@ -143,7 +143,7 @@ function eliminarEquipo(req, res) {
             Ligas.findById(infoEquipo.liga, (err, infoLiga) => {
                 if (!infoLiga) return res.status(404).send({ mensaje: 'No se encontro la ligas' });
                 if (req.user.sub === 'Rol_Admin' || req.user.sub == infoLiga.idUser) {
-                    Equipos.findByIdAndDelete(idEquipo, parametros, { new: true }, (err, equipoEliminado) => {
+                    Equipos.findByIdAndDelete(idEquipo, (err, equipoEliminado) => {
                         if (err) return res.status(500).send({ mensaje: "Error en la peticion" });
                         if (!equipoEliminado) return res.status(400).send({ mensaje: "Error al eliminar el equipo" });
                         return res.status(200).send({ equipo: equipoEliminado });
