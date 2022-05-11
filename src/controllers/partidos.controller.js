@@ -1,6 +1,5 @@
 const Equipos = require('../models/equipos.model');
 const Ligas = require('../models/ligas.model');
-const partidosModel = require('../models/partidos.model');
 const Partidos = require('../models/partidos.model');
 
 function partido(req, res) {

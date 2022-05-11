@@ -4,7 +4,7 @@ const md_autenticacion = require('../middlewares/autenticacion');
 
 var api= express.Router();
 
-api.post('/partido',md_autenticacion.Auth,partidosController.partido);
+api.post('/partido/idLiga',md_autenticacion.Auth,partidosController.partido);
 
 
 module.exports = api;
