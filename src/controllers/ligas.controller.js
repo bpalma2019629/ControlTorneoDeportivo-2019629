@@ -31,12 +31,12 @@ function agregarLiga(req, res) {
 
 function agregarLigaAdmin(req, res){
     var idUser = req.params.idUsuario;
-    var parametros = req.body.parametros;
+    var parametros = req.body;
     var ligasModel = new Ligas();
     if(req.user.rol == 'Rol_Admin'){
         if(parametros.liga){
-            Ligas.find({liga:parametros.liga, idUser:idUser}, (err, ligaEncontrada)=>{
-                if(ligaEncontrada.length = 0){
+            Ligas.findOne({liga:parametros.liga, idUser:idUser}, (err, ligaEncontrada)=>{
+                if(!ligaEncontrada){
                     ligasModel.liga = parametros.liga;
                     ligasModel.idUser = idUser;
                     ligasModel.save((err, ligaGuardada)=>{

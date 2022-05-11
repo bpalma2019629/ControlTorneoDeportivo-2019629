@@ -43,8 +43,8 @@ function agregarEquipo(req, res) {
 }
 
 function agregarEquipoAdmin(req, res) {
-    idUser = idUsuario;
-    var parametros = req.body.parametros;
+    idUser = req.params.idUsuario;
+    var parametros = req.body;
     var equipoModel = new Equipos();
 
     if (req.user.rol == 'Rol_Admin') {
@@ -53,8 +53,8 @@ function agregarEquipoAdmin(req, res) {
                 if (!ligaEncontrada) return res.status(404).send({ mensaje: 'No se encontro la liga' });
                 Equipos.find({ liga: ligaEncontrada._id }, (err, equiposLiga) => {
                     if (equiposLiga.lenght >= 10) return res.status(404).send({ mensaje: 'La liga solo puede tener 10 equipos maximo' });
-                    Equipos.find({ equipo: parametros.equipo, liga: ligaEncontrada._id }, (err, equipoEncontrado) => {
-                        if (equipoEncontrado.lenght == 0) {
+                    Equipos.findOne({ equipo: parametros.equipo, liga: ligaEncontrada._id }, (err, equipoEncontrado) => {
+                        if (!equipoEncontrado) {
                             equipoModel.puntos = 0;
                             equipoModel.golesFavor = 0;
                             equipoModel.golesContra = 0;
@@ -94,11 +94,11 @@ function editarEquipo(req, res) {
                     if (!infoLiga) return res.status(404).send({ mensaje: 'No se encontro la ligas' });
                     if (req.user.sub === 'Rol_Admin' || req.user.sub == infoLiga.idUser) {
                         if (parametros.liga) {
-                            Ligas.find({ liga: parametros.liga, idUser: infoLiga._id }, (err, ligaEncontrada) => {
+                            Ligas.findOne({ liga: parametros.liga, idUser: infoLiga._id }, (err, ligaEncontrada) => {
                                 if (!ligaEncontrada) return res.status(404).send({ mensaje: 'No se encontro la liga' });
-                                parametros.liga = ligaEncontrada[0]._id;
-                                Equipos.find({ equipo: parametros.equipo, liga: ligaEncontrada[0]._id }, (err, equipoEncontrado) => {
-                                    if (equipoEncontrado.lenght == 0) {
+                                parametros.liga = ligaEncontrada._id;
+                                Equipos.findOne({ equipo: parametros.equipo, liga: ligaEncontrada._id }, (err, equipoEncontrado) => {
+                                    if (!equipoEncontrado) {
                                         Equipos.findByIdAndUpdate(idEquipo, parametros, { new: true }, (err, equpoActualizado) => {
                                             if (err) return res.status(500).send({ mensaje: "Error en la peticion" });
                                             if (!equpoActualizado) return res.status(400).send({ mensaje: "Error al editar el equipo" });
@@ -110,8 +110,8 @@ function editarEquipo(req, res) {
                                 })
                             })
                         } else {
-                            Equipos.find({ equipo: parametros.equipo, liga: infoLiga._id }, (err, equipoEncontrado) => {
-                                if (equipoEncontrado.lenght == 0) {
+                            Equipos.findOne({ equipo: parametros.equipo, liga: infoLiga._id }, (err, equipoEncontrado) => {
+                                if (!equipoEncontrado) {
                                     Equipos.findByIdAndUpdate(idEquipo, parametros, { new: true }, (err, equpoActualizado) => {
                                         if (err) return res.status(500).send({ mensaje: "Error en la peticion" });
                                         if (!equpoActualizado) return res.status(400).send({ mensaje: "Error al editar el equipo" });
