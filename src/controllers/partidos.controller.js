@@ -52,7 +52,7 @@ function partido(req, res) {
                                                             if (!partidoGuardado) return res.status(404).send({ mensaje: 'No se pudo guardar el parido' });
                                                             if (parametros.golesEquipo1 > parametros.golesEquipo2) {
                                                                 Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo1, golesContra: parametros.golesEquipo2, puntos: ganador, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
-                                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - NumberequipoActualizado.golesContra}, { new: true }, (err, diferencia) => {
+                                                                    Equipos.findOneAndUpdate({ equipo: parametros.equipo1, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - equipoActualizado.golesContra}, { new: true }, (err, diferencia) => {
                                                                         Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { $inc: { golesFavor: parametros.golesEquipo2, golesContra: parametros.golesEquipo1, puntos: perdedor, partidosJugados: 1 } }, { new: true }, (err, equipoActualizado) => {
                                                                             Equipos.findOneAndUpdate({ equipo: parametros.equipo2, liga: idLiga }, { diferenciaGoles: equipoActualizado.golesFavor - equipoActualizado.golesContra }, { new: true }, (err, diferencia) => {
                                                                             })
@@ -79,6 +79,7 @@ function partido(req, res) {
                                                                     })
                                                                 })
                                                             }
+                                                            return res.status(200).send({partido: partidoGuardado})
                                                         })
                                                     })
                                                 })
